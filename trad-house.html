@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>少數語言學習應用原型</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #9e3a3a;
+            --secondary-color: #c27070;
+            --light-color: #f3dddd;
+            --dark-color: #5a2525;
+            --text-color: #333333;
+            --background-color: #f8f5f5;
+            --success-color: #4caf50;
+            --warn-color: #ff9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .prototype {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: 580px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .prototype-header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .prototype-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .navbar .title {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .navbar .actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-color);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+        
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .tab-bar {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            padding: 10px 0;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8em;
+            color: #999;
+        }
+        
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+        
+        .tab-item i {
+            font-size: 1.5em;
+            margin-bottom: 3px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .group-card {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .group-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .group-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--light-color);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+        
+        .group-info {
+            flex-grow: 1;
+        }
+        
+        .group-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .group-meta {
+            display: flex;
+            font-size: 0.8em;
+            color: #888;
+            gap: 10px;
+        }
+        
+        .house-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .traditional-house {
+            height: 180px;
+            width: 200px;
+            position: relative;
+        }
+        
+        .house-roof {
+            height: 80px;
+            width: 200px;
+            background-color: #8b5a2b;
+            border-radius: 100px 100px 0 0;
+            position: absolute;
+            top: 0;
+            z-index: 2;
+        }
+        
+        .house-body {
+            height: 100px;
+            width: 180px;
+            background-color: #a0522d;
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            z-index: 1;
+        }
+        
+        .house-door {
+            height: 60px;
+            width: 40px;
+            background-color: #603613;
+            position: absolute;
+            bottom: 0;
+            left: 70px;
+            z-index: 3;
+        }
+        
+        .house-incomplete {
+            opacity: 0.6;
+        }
+        
+        .house-parts {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .house-part {
+            width: 70px;
+            height: 70px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            color: var(--dark-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .house-part i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 60%;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .materials {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .material {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--light-color);
+            border-radius: 50px;
+            font-size: 0.9em;
+            color: var(--dark-color);
+        }
+        
+        .material i {
+            margin-right: 5px;
+        }
+        
+        .reward-card {
+            position: relative;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--light-color);
+        }
+        
+        .reward-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2em;
+            color: var(--primary-color);
+        }
+        
+        .unit-card {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .unit-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+        
+        .unit-info {
+            flex-grow: 1;
+        }
+        
+        .unit-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border-radius: 50px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+        
+        .badge-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .dialog-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .dialog {
+            background-color: white;
+            border-radius: 15px;
+            width: 85%;
+            max-height: 80%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .dialog-title {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .list-item-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+        
+        .list-item-content {
+            flex-grow: 1;
+        }
+        
+        .list-item-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .list-item-subtitle {
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .donation-amount {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .donation-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        
+        .donation-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            width: 60px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 1. 首頁 - Group列表 -->
+        <div class="prototype">
+            <div class="prototype-header">首頁 - Group列表</div>
+            <div class="prototype-body">
+                <div class="navbar">
+                    <div class="title">我的學習群組</div>
+                    <div class="actions">
+                        <button class="btn"><i class="fas fa-plus"></i> 新建群組</button>
+                    </div>
+                </div>
+                
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">阿美族語學習社</div>
+                        <div class="group-meta">
+                            <span><i class="fas fa-user"></i> 12 成員</span>
+                            <span><i class="fas fa-star"></i> 4.8</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                </div>
+                
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">排灣族文化研究</div>
+                        <div class="group-meta">
+                            <span><i class="fas fa-user"></i> 8 成員</span>
+                            <span><i class="fas fa-star"></i> 4.5</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                </div>
+                
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">泰雅族語言學習</div>
+                        <div class="group-meta">
+                            <span><i class="fas fa-user"></i> 15 成員</span>
+                            <span><i class="fas fa-star"></i> 4.9</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                </div>
+                
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fas fa-feather"></i>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">魯凱族初學者</div>
+                        <div class="group-meta">
+                            <span><i class="fas fa-user"></i> 7 成員</span>
+                            <span><i class="fas fa-star"></i> 4.3</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                </div>
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item active">
+                    <i class="fas fa-home"></i>
+                    <span>首頁</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-book"></i>
+                    <span>學習</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-users"></i>
+                    <span>群組</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. Group Center -->
+        <div class="prototype">
+            <div class="prototype-header">Group Center 介面</div>
+            <div class="prototype-body">
+                <div class="navbar">
+                    <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                    <div class="title">阿美族語學習社</div>
+                    <div class="actions">
+                        <button class="icon-btn"><i class="fas fa-info-circle"></i></button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 10px;">我們的傳統屋</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <div>已完成 60%</div>
+                            <div>需要 23 個建材</div>
+                        </div>
+                    </div>
+                    
+                    <div class="house-container">
+                        <div class="traditional-house house-incomplete">
+                            <div class="house-roof"></div>
+                            <div class="house-body"></div>
+                            <div class="house-door"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" style="width: 100%;"><i class="fas fa-gift"></i> 捐獻建材</button>
+                </div>
+                
+                <h3 style="margin: 15px 0 10px;">群組成員</h3>
+                <div class="members">
+                    <div class="avatar">JL</div>
+                    <div class="avatar">TW</div>
+                    <div class="avatar">KL</div>
+                    <div class="avatar">MN</div>
+                    <div class="avatar">BD</div>
+                    <div class="avatar">+7</div>
+                </div>
+                
+                <h3 style="margin: 15px 0 10px;">最近活動</h3>
+                <div class="list-item">
+                    <div class="list-item-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">小明捐獻了2個屋頂建材</div>
+                        <div class="list-item-subtitle">2小時前</div>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">大家全部完成了第3單元</div>
+                        <div class="list-item-subtitle">昨天</div>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">小華捐獻了3個牆面建材</div>
+                        <div class="list-item-subtitle">2天前</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item">
+                    <i class="fas fa-home"></i>
+                    <span>首頁</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-book"></i>
+                    <span>學習</span>
+                </div>
+                <div class="tab-item active">
+                    <i class="fas fa-users"></i>
+                    <span>群組</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 學習單元列表 -->
+        <div class="prototype">
+            <div class="prototype-header">學習單元列表</div>
+            <div class="prototype-body">
+                <div class="navbar">
+                    <div class="title">阿美族語學習課程</div>
+                    <div class="actions">
+                        <button class="icon-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                
+                <div class="unit-card">
+                    <div class="unit-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="unit-info">
+                        <div class="unit-name">單元 1: 基本問候語</div>
+                        <div><span class="badge badge-success">已完成</span> <span class="badge">10分鐘</span></div>
+                    </div>
+                    <i class="fas fa-check" style="color: var(--success-color);"></i>
+                </div>
+                
+                <div class="unit-card">
+                    <div class="unit-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="unit-info">
+                        <div class="unit-name">單元 2: 數字與計數</div>
+                        <div><span class="badge badge-success">已完成</span> <span class="badge">15分鐘</span></div>
+                    </div>
+                    <i class="fas fa-check" style="color: var(--success-color);"></i>
+                </div>
+                
+                <div class="unit-card">
+                    <div class="unit-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="unit-info">
+                        <div class="unit-name">單元 3: 家庭成員</div>
+                        <div><span class="badge">進行中</span> <span class="badge">20分鐘</span></div>
+                    </div>
+                    <div class="progress-bar" style="width: 50px;">
+                        <div class="progress-fill" style="width: 70%;"></div>
+                    </div>
+                </div>
+                
+                <div class="unit-card">
+                    <div class="unit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="unit-info">
+                        <div class="unit-name">單元 4: 日常對話</div>
+                        <div><span class="badge">未解鎖</span> <span class="badge">25分鐘</span></div>
+                    </div>
+                    <i class="fas fa-lock" style="color: #ccc;"></i>
+                </div>
+                
+                <div class="unit-card">
+                    <div class="unit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="unit-info">
+                        <div class="unit-name">單元 5: 季節與天氣</div>
+                        <div><span class="badge">未解鎖</span> <span class="badge">15分鐘</span></div>
+                    </div>
+                    <i class="fas fa-lock" style="color: #ccc;"></i>
+                </div>
+                
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item">
+                    <i class="fas fa-home"></i>
+                    <span>首頁</span>
+                </div>
+                <div class="tab-item active">
+                    <i class="fas fa-book"></i>
+                    <span>學習</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-users"></i>
+                    <span>群組</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. 單元完成獎勵 -->
+        <div class="prototype">
+            <div class="prototype-header">單元完成獎勵</div>
+            <div class="prototype-body">
+                <div class="navbar">
+                    <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                    <div class="title">單元完成</div>
+                    <div class="actions"></div>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h2 style="margin-bottom: 10px;">恭喜完成學習!</h2>
+                    <p style="margin-bottom: 20px;">你已完成「家庭成員」單元，獲得以下獎勵：</p>
+                    
+                    <div class="materials">
+                        <div class="material"><i class="fas fa-hammer"></i> 屋頂建材 x2</div>
+                        <div class="material"><i class="fas fa-tree"></i> 支柱建材 x1</div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <p>是否要捐獻這些建材給你的群組？</p>
+                        <p style="font-size: 0.9em; color: #888; margin-top: 5px;">捐獻後可以幫助群組更快完成傳統屋</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" style="flex: 1;">稍後再說</button>
+                        <button class="btn" style="flex: 1;">立即捐獻</button>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="tab-bar">
+                <div class="tab-item">
+                    <i class="fas fa-home"></i>
+                    <span>首頁</span>
+                </div>
+                <div class="tab-item active">
+                    <i class="fas fa-book"></i>
+                    <span>學習</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-users"></i>
+                    <span>群組</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. 建材捐獻對話框 -->
+        <div class="prototype">
+            <div class="prototype-header">建材捐獻對話框</div>
+            <div class="prototype-body">
+                <div class="navbar">
+                    <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                    <div class="title">阿美族語學習社</div>
+                    <div class="actions">
+                        <button class="icon-btn"><i class="fas fa-info-circle"></i></button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 10px;">我們的傳統屋</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <div>已完成 60%</div>
+                            <div>需要 23 個建材</div>
+                        </div>
+                    </div>
+                    
+                    <div class="house-container">
+                      <div class="traditional-house house-incomplete">
+                          <div class="house-roof"></div>
+                          <div class="house-body"></div>
+                          <div class="house-door"></div>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="dialog-overlay">
+                  <div class="dialog">
+                      <div class="dialog-header">
+                          <div class="dialog-title">捐獻建材</div>
+                          <button class="icon-btn"><i class="fas fa-times"></i></button>
+                      </div>
+                      
+                      <p>選擇你要捐獻的建材：</p>
+                      
+                      <div class="house-parts">
+                          <div class="house-part">
+                              <i class="fas fa-hammer"></i>
+                              <span>屋頂</span>
+                              <small>x4</small>
+                          </div>
+                          <div class="house-part">
+                              <i class="fas fa-tree"></i>
+                              <span>支柱</span>
+                              <small>x2</small>
+                          </div>
+                          <div class="house-part">
+                              <i class="fas fa-border-all"></i>
+                              <span>牆面</span>
+                              <small>x3</small>
+                          </div>
+                      </div>
+                      
+                      <div style="margin: 20px 0;">
+                          <p style="margin-bottom: 5px;">捐獻數量：</p>
+                          <div class="donation-amount">
+                              <button class="donation-btn"><i class="fas fa-minus"></i></button>
+                              <div class="donation-value">2</div>
+                              <button class="donation-btn"><i class="fas fa-plus"></i></button>
+                          </div>
+                      </div>
+                      
+                      <div style="display: flex; gap: 10px; margin-top: 20px;">
+                          <button class="btn btn-outline" style="flex: 1;">取消</button>
+                          <button class="btn" style="flex: 1;">確認捐獻</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-bar">
+              <div class="tab-item">
+                  <i class="fas fa-home"></i>
+                  <span>首頁</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-book"></i>
+                  <span>學習</span>
+              </div>
+              <div class="tab-item active">
+                  <i class="fas fa-users"></i>
+                  <span>群組</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-user"></i>
+                  <span>我的</span>
+              </div>
+          </div>
+      </div>
+      
+      <!-- 6. 我的建材倉庫 -->
+      <div class="prototype">
+          <div class="prototype-header">我的建材倉庫</div>
+          <div class="prototype-body">
+              <div class="navbar">
+                  <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                  <div class="title">我的建材</div>
+                  <div class="actions"></div>
+              </div>
+              
+              <div class="card">
+                  <h3 style="margin-bottom: 15px;">建材倉庫</h3>
+                  
+                  <div class="house-parts" style="margin-bottom: 25px;">
+                      <div class="house-part">
+                          <i class="fas fa-hammer"></i>
+                          <span>屋頂</span>
+                          <small>x4</small>
+                      </div>
+                      <div class="house-part">
+                          <i class="fas fa-tree"></i>
+                          <span>支柱</span>
+                          <small>x2</small>
+                      </div>
+                      <div class="house-part">
+                          <i class="fas fa-border-all"></i>
+                          <span>牆面</span>
+                          <small>x3</small>
+                      </div>
+                      <div class="house-part">
+                          <i class="fas fa-door-open"></i>
+                          <span>門窗</span>
+                          <small>x1</small>
+                      </div>
+                  </div>
+                  
+                  <h3 style="margin-bottom: 15px;">獲得記錄</h3>
+                  <div class="list-item">
+                      <div class="list-item-icon">
+                          <i class="fas fa-award"></i>
+                      </div>
+                      <div class="list-item-content">
+                          <div class="list-item-title">完成「家庭成員」單元</div>
+                          <div class="list-item-subtitle">獲得：屋頂 x2，支柱 x1</div>
+                      </div>
+                      <small>今天</small>
+                  </div>
+                  <div class="list-item">
+                      <div class="list-item-icon">
+                          <i class="fas fa-award"></i>
+                      </div>
+                      <div class="list-item-content">
+                          <div class="list-item-title">完成「數字與計數」單元</div>
+                          <div class="list-item-subtitle">獲得：牆面 x2，門窗 x1</div>
+                      </div>
+                      <small>昨天</small>
+                  </div>
+                  <div class="list-item">
+                      <div class="list-item-icon">
+                          <i class="fas fa-award"></i>
+                      </div>
+                      <div class="list-item-content">
+                          <div class="list-item-title">完成「基本問候語」單元</div>
+                          <div class="list-item-subtitle">獲得：屋頂 x2，牆面 x1</div>
+                      </div>
+                      <small>3天前</small>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-bar">
+              <div class="tab-item">
+                  <i class="fas fa-home"></i>
+                  <span>首頁</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-book"></i>
+                  <span>學習</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-users"></i>
+                  <span>群組</span>
+              </div>
+              <div class="tab-item active">
+                  <i class="fas fa-user"></i>
+                  <span>我的</span>
+              </div>
+          </div>
+      </div>
+      
+      <!-- 7. 完成的傳統屋展示 -->
+      <div class="prototype">
+          <div class="prototype-header">完成的傳統屋展示</div>
+          <div class="prototype-body">
+              <div class="navbar">
+                  <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                  <div class="title">泰雅族語言學習</div>
+                  <div class="actions">
+                      <button class="icon-btn"><i class="fas fa-share-alt"></i></button>
+                  </div>
+              </div>
+              
+              <div class="card" style="text-align: center;">
+                  <h3 style="margin-bottom: 10px;">傳統屋建造完成！</h3>
+                  <p style="margin-bottom: 15px;">恭喜！群組合作完成了泰雅族傳統屋的建造</p>
+                  
+                  <div class="house-container" style="height: 250px;">
+                      <div class="traditional-house" style="transform: scale(1.3);">
+                          <div class="house-roof"></div>
+                          <div class="house-body"></div>
+                          <div class="house-door"></div>
+                      </div>
+                  </div>
+                  
+                  <div style="background-color: var(--light-color); border-radius: 10px; padding: 15px; margin: 15px 0; text-align: left;">
+                      <h4 style="margin-bottom: 10px;">成就解鎖</h4>
+                      <p><i class="fas fa-medal" style="color: var(--primary-color);"></i> 建築大師</p>
+                      <p><i class="fas fa-medal" style="color: var(--primary-color);"></i> 團隊合作</p>
+                      <p><i class="fas fa-lock-open" style="color: var(--success-color);"></i> 解鎖「泰雅族服飾」特別課程</p>
+                  </div>
+                  
+                  <button class="btn">分享到社交媒體</button>
+              </div>
+              
+              <h3 style="margin: 15px 0 10px;">貢獻排行</h3>
+              <div class="list-item">
+                  <div class="avatar">JL</div>
+                  <div class="list-item-content">
+                      <div class="list-item-title">小明</div>
+                      <div class="list-item-subtitle">貢獻 12 個建材</div>
+                  </div>
+                  <div style="color: var(--primary-color); font-weight: bold;">🥇</div>
+              </div>
+              <div class="list-item">
+                  <div class="avatar">TW</div>
+                  <div class="list-item-content">
+                      <div class="list-item-title">小華</div>
+                      <div class="list-item-subtitle">貢獻 9 個建材</div>
+                  </div>
+                  <div style="color: var(--primary-color); font-weight: bold;">🥈</div>
+              </div>
+              <div class="list-item">
+                  <div class="avatar">KL</div>
+                  <div class="list-item-content">
+                      <div class="list-item-title">小美</div>
+                      <div class="list-item-subtitle">貢獻 7 個建材</div>
+                  </div>
+                  <div style="color: var(--primary-color); font-weight: bold;">🥉</div>
+              </div>
+          </div>
+          <div class="tab-bar">
+              <div class="tab-item">
+                  <i class="fas fa-home"></i>
+                  <span>首頁</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-book"></i>
+                  <span>學習</span>
+              </div>
+              <div class="tab-item active">
+                  <i class="fas fa-users"></i>
+                  <span>群組</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-user"></i>
+                  <span>我的</span>
+              </div>
+          </div>
+      </div>
+      
+      <!-- 8. 創建新群組 -->
+      <div class="prototype">
+          <div class="prototype-header">創建新群組</div>
+          <div class="prototype-body">
+              <div class="navbar">
+                  <button class="icon-btn"><i class="fas fa-arrow-left"></i></button>
+                  <div class="title">創建新群組</div>
+                  <div class="actions"></div>
+              </div>
+              
+              <div class="card">
+                  <h3 style="margin-bottom: 15px;">基本資訊</h3>
+                  
+                  <div style="margin-bottom: 15px;">
+                      <label style="display: block; margin-bottom: 5px; font-weight: bold;">群組名稱</label>
+                      <input type="text" placeholder="輸入群組名稱" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em;">
+                  </div>
+                  
+                  <div style="margin-bottom: 15px;">
+                      <label style="display: block; margin-bottom: 5px; font-weight: bold;">學習語言</label>
+                      <select style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em; background-color: white;">
+                          <option>阿美族語</option>
+                          <option>泰雅族語</option>
+                          <option>排灣族語</option>
+                          <option>布農族語</option>
+                          <option>魯凱族語</option>
+                      </select>
+                  </div>
+                  
+                  <div style="margin-bottom: 15px;">
+                      <label style="display: block; margin-bottom: 5px; font-weight: bold;">群組簡介</label>
+                      <textarea placeholder="簡單介紹你的群組" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em; height: 100px; resize: none;"></textarea>
+                  </div>
+                  
+                  <div style="margin-bottom: 15px;">
+                      <label style="display: block; margin-bottom: 5px; font-weight: bold;">傳統屋選擇</label>
+                      <div style="display: flex; gap: 10px; overflow-x: auto; padding: 5px 0;">
+                          <div style="min-width: 120px; border: 2px solid var(--primary-color); border-radius: 10px; padding: 10px; text-align: center;">
+                              <div style="margin-bottom: 5px; font-weight: bold;">阿美族屋</div>
+                              <div class="house-container" style="height: 80px; margin: 0;">
+                                  <div class="traditional-house" style="transform: scale(0.4);">
+                                      <div class="house-roof"></div>
+                                      <div class="house-body"></div>
+                                      <div class="house-door"></div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div style="min-width: 120px; border: 1px solid #ddd; border-radius: 10px; padding: 10px; text-align: center;">
+                              <div style="margin-bottom: 5px; font-weight: bold;">泰雅族屋</div>
+                              <div class="house-container" style="height: 80px; margin: 0;">
+                                  <div class="traditional-house" style="transform: scale(0.4);">
+                                      <div class="house-roof" style="border-radius: 0; transform: skewX(-10deg);"></div>
+                                      <div class="house-body"></div>
+                                      <div class="house-door"></div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div style="min-width: 120px; border: 1px solid #ddd; border-radius: 10px; padding: 10px; text-align: center;">
+                              <div style="margin-bottom: 5px; font-weight: bold;">排灣族屋</div>
+                              <div class="house-container" style="height: 80px; margin: 0;">
+                                  <div class="traditional-house" style="transform: scale(0.4);">
+                                      <div class="house-roof" style="height: 60px;"></div>
+                                      <div class="house-body" style="height: 120px;"></div>
+                                      <div class="house-door"></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <button class="btn" style="width: 100%;">創建群組</button>
+              </div>
+          </div>
+          <div class="tab-bar">
+              <div class="tab-item active">
+                  <i class="fas fa-home"></i>
+                  <span>首頁</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-book"></i>
+                  <span>學習</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-users"></i>
+                  <span>群組</span>
+              </div>
+              <div class="tab-item">
+                  <i class="fas fa-user"></i>
+                  <span>我的</span>
+              </div>
+          </div>
+      </div>
+  </div>
+</body>
+</html>
